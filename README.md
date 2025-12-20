@@ -1,71 +1,103 @@
 # Face Emotion Detection by AI
 
-## Description
+## 1. Description of this project
 
-This project implements a facial emotion detection system using Deep Learning. It is designed to classify facial expressions into **7 distinct emotions**: anger, disgust, fear, happiness, neutral, sad, and surprised.
+This project is an AI-based system designed to detect human emotions from facial expressions. It utilizes a deep learning approach, specifically a Convolutional Neural Network (CNN), trained on the **FER2013** dataset (Face Expression Recognition). The model classifies images into one of 7 emotion categories.
 
-The core of the project is a Convolutional Neural Network (CNN) trained on the **FER2013** dataset, capable of processing 48x48 grayscale images to predict the subject's emotion.
-
-## Tech Stack
+## 2. Tech Stack
 
 - **Language**: Python
 - **Deep Learning Framework**: PyTorch
-- **Computer Vision**: Torchvision
-- **Data Management**: Hugging Face Datasets
-- **Utilities**: Tqdm (for progress tracking)
+- **Vision Libraries**: Torchvision
+- **Data Handling**: Hugging Face Datasets (`datasets` library)
+- **Utilities**: Tqdm (for progress bars)
 
-## Training Technique
+## 3. Techniques used to train emotion_detect model
 
-The project uses a custom CNN architecture (`EmotionCNN`) trained from scratch.
+The model is trained using several key Deep Learning and Computer Vision techniques:
 
-### Model Architecture
+- **Convolutional Neural Network (CNN)**: The core architecture used to automatically learn spatial hierarchies of features from input images.
+- **Data Preprocessing & Normalization**:
+  - Images are resized to `48x48` pixels.
+  - Converted to **Grayscale** (1 channel) as color is less critical for feature patterns in this specific task.
+  - Normalized with mean `0.5` and standard deviation `0.5`.
+- **Data Augmentation**: To prevent overfitting and improve generalization:
+  - `RandomHorizontalFlip`: Randomly flips images horizontally.
+  - `RandomRotation`: Rotates images by up to 15 degrees.
+- **Regularization**:
+  - **Batch Normalization**: Applied after convolution layers to stabilize and accelerate training.
+  - **Dropout**: Applied in the fully connected layers (p=0.5) to prevent the model from relying too heavily on specific neurons.
+- **Optimization**:
+  - Optimizer: **Adam** with a learning rate of `0.001`.
+  - Loss Function: **CrossEntropyLoss** (standard for multi-class classification).
 
-- **Convolutional Layers**: 3 layers with increasing channel depth (32 -> 64 -> 128), each followed by Batch Normalization and ReLU activation.
-- **Pooling**: Max Pooling layers to downsample feature maps.
-- **Fully Connected Layers**: Two linear layers with Dropout (50%) to prevent overfitting.
+## 4. Components of ML Pipeline
 
-### Training Details
+The project is structured into modular components:
 
-- **Dataset**: FER2013 (via `clip-benchmark/wds_fer2013`).
-- **Preprocessing**:
-  - Resize to 48x48 pixels.
-  - Convert to Grayscale (1 channel).
-  - Normalization (mean=0.5, std=0.5).
-- **Hyperparameters**:
-  - **Loss Function**: CrossEntropyLoss.
-  - **Optimizer**: Adam (Learning Rate = 0.001).
-  - **Epochs**: 50.
+- **`src/data_loader.py`**:
+  - **Role**: Data Ingestion & Transformation.
+  - **Description**: Loads the FER2013 dataset from Hugging Face. It defines the `FER2013Dataset` class and creates training and testing `DataLoader` instances with the defined transformations.
+- **`src/model.py`**:
+  - **Role**: Model Architecture Definition.
+  - **Description**: Defines the `EmotionCNN` class. It specifies the 3 convolutional layers, max-pooling layers, batch normalization, and fully connected layers.
+- **`src/train.py`**:
+  - **Role**: Training Orchestrator.
+  - **Description**: Contains the training loop. It iterates through epochs, calculates loss, performs backpropagation (`loss.backward()`), updates weights, and evaluates the model on the test set. It saves the best model as `best_model.pth` based on accuracy.
 
-## How to Clone
+## 5. How does it work
 
-You can clone this repository to your local machine using the following command:
+1.  **Input**: The system takes a 48x48 pixel grayscale image of a face.
+2.  **Feature Extraction**: The image passes through 3 blocks of **Convolutional Layers**. Each layer applies filters (kernels) to detect features like edges, textures, and curves.
+3.  **Downsampling**: **Max Pooling** layers reduce the spatial dimensions (e.g., 48x48 -> 24x24 -> 12x12 -> 6x6) while retaining important information.
+4.  **Activation**: **ReLU** (Rectified Linear Unit) activation functions are used to introduce non-linearity, allowing the model to learn complex patterns.
+5.  **Classification**: The flattened features are passed through **Fully Connected (Linear) Layers**.
+6.  **Output**: The final layer outputs a probability distribution across the 7 emotion classes (e.g., angry, disgust, fear, happy, sad, surprise, neutral). The class with the highest score is the predicted emotion.
+
+## 6. How to clone this project
+
+To download this project to your local machine, run the following command in your terminal:
 
 ```bash
-git clone https://github.com/PhoengZ/face-detect-emotion-by-ai.git
+git clone <repository_url>
 cd face-detect-emotion-by-ai
 ```
 
-## How to Use
+_(Note: Replace `<repository_url>` with the actual URL of this repository)_
 
-### 1. Prerequisites
+## 7. How to use this project
 
-Make sure you have Python installed. You will need to install the following dependencies:
+1.  **Set up the environment**:
+    Ensure you have Python installed. It is recommended to create a virtual environment.
 
-```bash
-pip install torch torchvision datasets tqdm
-```
+2.  **Install Dependencies**:
 
-### 2. Running the Project
+    ```bash
+    pip install -r requirement.txt
+    ```
 
-The project is structured as a Jupyter Notebook.
+3.  **Train the Model**:
+    Run the training script to start training the model from scratch.
 
-1.  Open `detect_image.ipynb` in your preferred notebook environment (VS Code, Jupyter Lab, or Google Colab).
-2.  Run the cells sequentially to:
-    - Load and preprocess the dataset.
-    - Define and initialize the `EmotionCNN` model.
-    - Train the model for 50 epochs.
-    - Evaluate the model accuracy on the test set.
+    ```bash
+    python src/train.py
+    ```
 
-### 3. Output
+    This will download the dataset, train the model for 100 epochs (default), and save the weight with the highest accuracy to `best_model.pth`.
 
-After training, the model weights will be saved to `emotion_model.pth` in the current directory.
+4.  **Inference / Testing**:
+    You can use the Jupyter Notebook `detect_image.ipynb` to load the trained model and test it on new images.
+
+## 8. What did I learn from doing this project
+
+Through the development of this project, several key Deep Learning concepts were reinforced:
+
+- **CNN Mechanics**: Understanding how **Kernel Size** (frame for moving over pixels), **Stride**, and **Padding** work together to process images and maintain or reduce dimensions.
+- **Layer Functions**:
+  - **Conv2d**: How to extract features from 2D image data.
+  - **MaxPool2d**: How to downsample images (decompose 48x48 to 24x24) to reduce computation and focus on dominant features.
+  - **Linear (Fully Connected)**: How to map extracted features to final class scores.
+- **Activation & Regularization**:
+  - **ReLU**: Importance of non-linearity in deep networks.
+  - **Dropout**: The concept of "forgetting" or zeroing out random elements to force the model to learn more robust features (preventing overfitting).
+- **Training Loop Implementation**: constructing a manual training loop in PyTorch, managing batches, computing gradients, and updating parameters.
