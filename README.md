@@ -101,3 +101,8 @@ Through the development of this project, several key Deep Learning concepts were
   - **ReLU**: Importance of non-linearity in deep networks.
   - **Dropout**: The concept of "forgetting" or zeroing out random elements to force the model to learn more robust features (preventing overfitting).
 - **Training Loop Implementation**: constructing a manual training loop in PyTorch, managing batches, computing gradients, and updating parameters.
+
+### 9.Note
+
+Dataset based on FER-2013 (Goodfellow et al., 2013), accessed via clip-benchmark/wds_fer2013.
+Dataset Source: [clip-benchmark/wds_fer2013](https://huggingface.co/datasets/clip-benchmark/wds_fer2013)
